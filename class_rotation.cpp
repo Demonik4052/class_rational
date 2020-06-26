@@ -4,6 +4,8 @@
 #include <set>
 #include <vector>
 #include <map>
+#include <stdexcept>
+#include <exception>
 using namespace std;
 
 int gcd(int a, int b) {
@@ -18,6 +20,8 @@ public:
     }
 
     Rational(int input_numerator, int input_denominator) {
+    	if(input_denominator == 0)
+    		throw invalid_argument("denominator = 0");
     	int gcf = gcd(input_numerator, input_denominator);		//Greatest common factor
 		numerator = input_numerator/gcf;
 		denominator  = input_denominator/gcf;
@@ -73,6 +77,8 @@ Rational operator * (const Rational& lhs, const Rational& rhs)
 
 Rational operator / (const Rational& lhs, const Rational& rhs)
 {
+	if(rhs.Numerator() == 0 || lhs.Denominator() == 0)
+		throw domain_error("Are you trying to divide by zero");
 	return lhs * Rational(rhs.Denominator(), rhs.Numerator());
 }
 
@@ -100,5 +106,22 @@ bool operator < (const Rational& lhs, const Rational& rhs)
 }
 
 int main()  {
-	return 0;
+	try {
+	        Rational r(1, 0);
+	        cout << "Doesn't throw in case of zero denominator" << endl;
+	        return 1;
+	    } catch (invalid_argument& ex) {
+	    	cout << "Invalid argument: " << ex.what() << endl;
+	    }
+
+	    try {
+	        auto x = Rational(1, 2) / Rational(0, 1);
+	        cout << "Doesn't throw in case of division by zero" << endl;
+	        return 2;
+	    } catch (domain_error& ex) {
+	    	cout << "Invalid action: " << ex.what() << endl;
+	    }
+
+	    cout << "OK" << endl;
+	 return 0;
 }
